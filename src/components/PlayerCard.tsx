@@ -66,8 +66,9 @@ export function PlayerCard(props: {
                   props.onChoose(font(), chooseButton);
                 }}
               >
-                Choose or press
-                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
+                <span class="xl:hidden">Choose</span>
+                <span class="hidden xl:inline">Choose or press</span>
+                <kbd class="border-surface-700 bg-surface-900 hidden rounded border px-1.5 py-0.5 text-xs text-white xl:inline-block">
                   {arrow()}
                 </kbd>
               </button>

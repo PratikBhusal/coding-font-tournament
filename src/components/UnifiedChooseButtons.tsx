@@ -42,7 +42,7 @@ export function UnifiedChooseButtons(props: {
           props.onChoose(props.leftPlayer()!, event.currentTarget)
         }
       >
-        <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
+        <kbd class="border-surface-700 bg-surface-900 hidden rounded border px-1.5 py-0.5 text-xs text-white xl:inline-block">
           ←
         </kbd>
         <ChooseButtonLabel side="A" font={props.leftPlayer()!} />
@@ -56,7 +56,7 @@ export function UnifiedChooseButtons(props: {
         }
       >
         <ChooseButtonLabel side="B" font={props.rightPlayer()!} />
-        <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
+        <kbd class="border-surface-700 bg-surface-900 hidden rounded border px-1.5 py-0.5 text-xs text-white xl:inline-block">
           →
         </kbd>
       </button>

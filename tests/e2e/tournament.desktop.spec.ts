@@ -28,6 +28,28 @@ test.describe("tournament desktop (/)", () => {
     await expect(page.locator("#app-nav-select")).toBeHidden();
   });
 
+  test("choose buttons show keyboard shortcut hints", async ({ page }) => {
+    await page.goto("./");
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+    const leftShortcut = page.locator("button kbd", { hasText: "←" });
+    const rightShortcut = page.locator("button kbd", { hasText: "→" });
+    async function expectShortcutsVisible() {
+      await expect(leftShortcut).toBeVisible();
+      await expect(rightShortcut).toBeVisible();
+    }
+
+    await expect(leftShortcut).toHaveCount(1);
+    await expect(rightShortcut).toHaveCount(1);
+    await expectShortcutsVisible();
+
+    await page.getByRole("button", { name: "Unified", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Unified", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expectShortcutsVisible();
+  });
+
   test("split view responds to sidebar width, not only viewport width", async ({
     page,
   }) => {
