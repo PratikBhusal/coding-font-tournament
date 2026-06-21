@@ -31,7 +31,7 @@ export const $showName = persistentAtom<boolean>("showName", false, json);
 // "split" = two side-by-side panes; "unified" = one pane, each line shown in both fonts.
 export const $viewMode = persistentAtom<"split" | "unified">(
   "tournamentViewMode",
-  "unified",
+  "split",
   json,
 );
 export const $savedTournamentResult = persistentAtom<any>(

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import codingFonts from "../../src/lib/codingFonts";
 
 const totalFontCount = codingFonts.length;
@@ -7,6 +7,33 @@ const curatedFontCount = codingFonts.filter(
 ).length;
 const curatedBadgeText = `${curatedFontCount}/${totalFontCount}`;
 const allBadgeText = `${totalFontCount}/${totalFontCount}`;
+
+async function expectUnifiedTournamentView(page: Page) {
+  // Each source line of the active (TypeScript) sample is rendered twice — once
+  // per competing font.
+  const lines = page.locator(
+    ".code-lang[data-lang='typescript'] .unified-line",
+  );
+  await expect(lines.first()).toBeVisible();
+  const count = await lines.count();
+  expect(count).toBeGreaterThan(0);
+  expect(count % 2).toBe(0);
+
+  // Adjacent copies use different fonts (set inline per line).
+  const fontA = await lines.nth(0).evaluate((el) => el.style.fontFamily);
+  const fontB = await lines.nth(1).evaluate((el) => el.style.fontFamily);
+  expect(fontA).not.toBe("");
+  expect(fontB).not.toBe("");
+  expect(fontA).not.toBe(fontB);
+}
+
+async function expectSplitTournamentView(page: Page) {
+  const specimens = page.locator(".code-specimen").filter({
+    has: page.locator(".shiki"),
+  });
+  await expect(specimens).toHaveCount(2);
+  await expect(page.locator(".unified-line")).toHaveCount(0);
+}
 
 test.describe("tournament (/)", () => {
   test("renders code specimens after a full page load", async ({ page }) => {
@@ -207,40 +234,39 @@ test.describe("tournament (/)", () => {
     expect(svg).not.toMatch(/(fill|stroke)="\s*"/);
   });
 
-  test("unified view: renders each line in both fonts and persists across reload", async ({
-    page,
-  }) => {
-    await page.goto("./");
-    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+  [
+    {
+      buttonName: "Unified",
+      otherButtonName: "Split",
+      expectView: expectUnifiedTournamentView,
+    },
+    {
+      buttonName: "Split",
+      otherButtonName: "Unified",
+      expectView: expectSplitTournamentView,
+    },
+  ].forEach(({ buttonName, otherButtonName, expectView }) => {
+    test(`${buttonName.toLowerCase()} view: renders correctly after switching modes`, async ({
+      page,
+    }) => {
+      await page.goto("./");
+      await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
 
-    await page.getByRole("button", { name: "Unified", exact: true }).click();
+      const modeButton = page.getByRole("button", {
+        name: buttonName,
+        exact: true,
+      });
+      const otherModeButton = page.getByRole("button", {
+        name: otherButtonName,
+        exact: true,
+      });
 
-    // Each source line of the active (TypeScript) sample is rendered twice — once
-    // per competing font.
-    const lines = page.locator(
-      ".code-lang[data-lang='typescript'] .unified-line",
-    );
-    await expect(lines.first()).toBeVisible();
-    const count = await lines.count();
-    expect(count).toBeGreaterThan(0);
-    expect(count % 2).toBe(0);
-
-    // Adjacent copies use different fonts (set inline per line).
-    const fontA = await lines.nth(0).evaluate((el) => el.style.fontFamily);
-    const fontB = await lines.nth(1).evaluate((el) => el.style.fontFamily);
-    expect(fontA).not.toBe("");
-    expect(fontB).not.toBe("");
-    expect(fontA).not.toBe(fontB);
-
-    // The mode is persisted (mirrors $showName).
-    await page.reload();
-    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Unified", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
-    await expect(
-      page.locator(".code-lang[data-lang='typescript'] .unified-line").first(),
-    ).toBeVisible();
+      await otherModeButton.click();
+      await expect(otherModeButton).toHaveAttribute("aria-pressed", "true");
+      await modeButton.click();
+      await expect(modeButton).toHaveAttribute("aria-pressed", "true");
+      await expectView(page);
+    });
   });
 
   test("unified view: a Choose button picks the winner and advances the match", async ({
@@ -290,5 +316,4 @@ test.describe("tournament (/)", () => {
       page.getByRole("button", { name: /^← Choose (?!A:|B:).+/ }),
     ).toHaveCount(0);
   });
-
 });
