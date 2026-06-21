@@ -269,13 +269,19 @@
   /* feature-settings selected by root data-* (default: both on) */
   font-feature-settings: var(--feat-both, normal);
 }
-html[data-ligatures="0"][data-opentype="1"] .code-specimen {
+.font-feature-sample {
+  font-feature-settings: var(--feat-initial, var(--feat-both, normal));
+}
+html[data-ligatures="0"][data-opentype="1"] .code-specimen,
+html[data-ligatures="0"][data-opentype="1"] .font-feature-sample {
   font-feature-settings: var(--feat-ot, normal);
 }
-html[data-ligatures="1"][data-opentype="0"] .code-specimen {
+html[data-ligatures="1"][data-opentype="0"] .code-specimen,
+html[data-ligatures="1"][data-opentype="0"] .font-feature-sample {
   font-feature-settings: var(--feat-lig, normal);
 }
-html[data-ligatures="0"][data-opentype="0"] .code-specimen {
+html[data-ligatures="0"][data-opentype="0"] .code-specimen,
+html[data-ligatures="0"][data-opentype="0"] .font-feature-sample {
   font-feature-settings: normal;
 }
 

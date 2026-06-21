@@ -56,14 +56,15 @@ export function getFontStyle(
   enableOpenTypeFeatures = true,
   enableLigatureFeatures = true,
 ) {
-  const fontFeatures = getFontFeatures(
-    font,
-    enableOpenTypeFeatures,
-    enableLigatureFeatures,
-  );
   return [
     font?.family ? `font-family: ${getCssFontFamily(font)}` : "",
-    fontFeatures ? `font-feature-settings: ${fontFeatures}` : "",
+    `--feat-both: ${getFontFeatures(font, true, true) || "normal"}`,
+    `--feat-lig: ${getFontFeatures(font, false, true) || "normal"}`,
+    `--feat-ot: ${getFontFeatures(font, true, false) || "normal"}`,
+    `--feat-initial: ${
+      getFontFeatures(font, enableOpenTypeFeatures, enableLigatureFeatures) ||
+      "normal"
+    }`,
   ]
     .filter(Boolean)
     .join("; ");

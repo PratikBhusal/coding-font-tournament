@@ -208,7 +208,9 @@ function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
               checked={selectedFamilySet().has(font.family)}
               onInput={() => toggle(font.family)}
             />
-            <span style={getFontStyle(font)}>{getFontDisplayName(font)}</span>
+            <span class="font-feature-sample" style={getFontStyle(font)}>
+              {getFontDisplayName(font)}
+            </span>
           </label>
         )}
       </For>

@@ -27,7 +27,7 @@ export function PlayerCard(props: {
           <>
             <Show when={showName()}>
               <div
-                class="flex min-h-9 items-center text-lg font-bold"
+                class="font-feature-sample flex min-h-9 items-center text-lg font-bold"
                 style={getFontStyle(font())}
               >
                 {getFontDisplayName(font())}

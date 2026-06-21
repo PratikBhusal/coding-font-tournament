@@ -38,7 +38,9 @@ function paintView(prefix: string, d: DOMStringMap, maximizeHref: string) {
     // Track the painted font so the close buttons know which font each view holds.
     name.dataset.family = d.family ?? "";
     if (d.cssFamily) name.style.fontFamily = d.cssFamily;
-    name.style.fontFeatureSettings = d.featBoth || "normal";
+    if (d.featBoth) name.style.setProperty("--feat-both", d.featBoth);
+    if (d.featLig) name.style.setProperty("--feat-lig", d.featLig);
+    if (d.featOt) name.style.setProperty("--feat-ot", d.featOt);
   }
 
   const isSystem = d.system === "1";

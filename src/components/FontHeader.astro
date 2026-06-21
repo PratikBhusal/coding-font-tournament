@@ -19,14 +19,14 @@ const nameStyle = getFontStyle(font);
   {
     font.isSystemFont ? (
       <span
-        class="truncate text-lg font-bold whitespace-nowrap"
+        class="font-feature-sample truncate text-lg font-bold whitespace-nowrap"
         style={nameStyle}
       >
         {displayName}
       </span>
     ) : (
       <a
-        class="truncate text-lg font-bold whitespace-nowrap hover:underline"
+        class="font-feature-sample truncate text-lg font-bold whitespace-nowrap hover:underline"
         style={nameStyle}
         href={getFontPath(font.family)}
       >

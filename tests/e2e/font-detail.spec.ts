@@ -14,6 +14,74 @@ test.describe("font detail", () => {
     await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
   });
 
+  test("OpenType toggle updates sidebar font samples on compare pages", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("fontOpenTypeFeatures", "true");
+      localStorage.setItem("fontLigatures", "true");
+    });
+    await page.goto("JetBrainsMono/DejaVuSansMono");
+
+    const sidebarSample = page.locator("aside .font-feature-sample").first();
+    await expect(sidebarSample).toBeAttached();
+    await expect(page.locator("#ctrl-opentype")).toBeChecked();
+
+    await expect
+      .poll(() =>
+        sidebarSample.evaluate((element) => {
+          return getComputedStyle(element).fontFeatureSettings;
+        }),
+      )
+      .not.toBe("normal");
+
+    await page.locator("#ctrl-opentype").uncheck();
+    await expect(page.locator("html")).toHaveAttribute("data-opentype", "0");
+    await expect
+      .poll(() =>
+        sidebarSample.evaluate((element) => {
+          return getComputedStyle(element).fontFeatureSettings;
+        }),
+      )
+      .toBe("normal");
+  });
+
+  test("OpenType toggle keeps Monaspace Neon ligatures enabled", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("fontOpenTypeFeatures", "true");
+      localStorage.setItem("fontLigatures", "true");
+    });
+    await page.goto("JetBrainsMono/MonaspaceNeon");
+
+    const sidebarSample = page
+      .locator("aside .font-feature-sample", { hasText: "Monaspace Neon" })
+      .first();
+    await expect(sidebarSample).toBeAttached();
+
+    await page.locator("#ctrl-opentype").uncheck();
+    await expect(page.locator("html")).toHaveAttribute("data-opentype", "0");
+
+    await expect
+      .poll(() =>
+        sidebarSample.evaluate((element) => {
+          return getComputedStyle(element).fontFeatureSettings;
+        }),
+      )
+      .toContain("ss01");
+
+    await page.locator("#ctrl-ligatures").uncheck();
+    await expect(page.locator("html")).toHaveAttribute("data-ligatures", "0");
+    await expect
+      .poll(() =>
+        sidebarSample.evaluate((element) => {
+          return getComputedStyle(element).fontFeatureSettings;
+        }),
+      )
+      .toBe("normal");
+  });
+
   test("navigating from browse to a font page keeps content (no blank route swap)", async ({
     page,
   }) => {

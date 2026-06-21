@@ -21,7 +21,7 @@ export function ChampionView(props: {
               <a
                 href={getFontPath(props.winner.family)}
                 style={getFontStyle(props.winner)}
-                class="text-3xl font-bold hover:underline"
+                class="font-feature-sample text-3xl font-bold hover:underline"
               >
                 {getFontDisplayName(props.winner)}
               </a>
