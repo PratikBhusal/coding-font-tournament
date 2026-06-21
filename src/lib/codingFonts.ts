@@ -272,6 +272,24 @@ const hostedFonts: CodingFont[] = [
     downloadUrl: "https://fonts.google.com/download?family=DM%20Mono",
   },
   {
+    family: "DejaVu Sans Mono",
+    includeInInitialTournament: true,
+    variants: ["regular", "italic", "bold", "boldoblique"],
+    files: {
+      regular:
+        "https://github.com/PratikBhusal/dejavu-slashed/releases/latest/download/DejaVuSansMono.ttf",
+      italic:
+        "https://github.com/PratikBhusal/dejavu-slashed/releases/latest/download/DejaVuSansMono-Oblique.ttf",
+      bold:
+        "https://github.com/PratikBhusal/dejavu-slashed/releases/latest/download/DejaVuSansMono-Bold.ttf",
+      boldoblique:
+        "https://github.com/PratikBhusal/dejavu-slashed/releases/latest/download/DejaVuSansMono-BoldOblique.ttf",
+    },
+    siteUrl: "https://github.com/PratikBhusal/dejavu-slashed",
+    downloadUrl: "https://github.com/PratikBhusal/dejavu-slashed/releases/latest",
+    openTypeFeatures: ["zero"],
+  },
+  {
     family: "Fira Code",
     includeInInitialTournament: true,
     variants: ["300", "regular", "500", "600", "700"],
