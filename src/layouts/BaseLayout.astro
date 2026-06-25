@@ -133,3 +133,10 @@ const {
     <slot />
   </body>
 </html>
+
+<script>
+  import { initAppleFontSlugFallback } from "../scripts/appleFontSlugFallback";
+
+  initAppleFontSlugFallback();
+  document.addEventListener("astro:page-load", initAppleFontSlugFallback);
+</script>

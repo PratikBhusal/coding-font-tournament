@@ -25,3 +25,38 @@ export function findFontBySlug(fonts: CodingFont[], slug: string) {
   const decodedSlug = decodeURIComponent(slug);
   return fonts.find((font) => font.family.replace(/\s+/g, "") === decodedSlug);
 }
+
+export function getAppleFontSafePathname(
+  pathname: string,
+  basePath: string,
+  appleFontsAvailable: boolean,
+) {
+  if (appleFontsAvailable) return null;
+
+  const base = basePath.replace(/\/$/, "");
+  const prefix = base && pathname.startsWith(`${base}/`) ? base : "";
+  const path = prefix ? pathname.slice(prefix.length) : pathname;
+  let changed = false;
+  const safeSegments = path
+    .split("/")
+    .map((segment) => {
+      if (decodeURIComponent(segment) !== getFontSlug("SF Mono")) {
+        return segment;
+      }
+
+      changed = true;
+      return getFontSlug("ui-monospace");
+    });
+
+  const fontSegments = safeSegments.filter(Boolean);
+  if (
+    changed &&
+    fontSegments.length === 2 &&
+    fontSegments.every((segment) => segment === getFontSlug("ui-monospace"))
+  ) {
+    return `${prefix}/${getFontSlug("ui-monospace")}`;
+  }
+
+  const safePath = safeSegments.join("/");
+  return changed ? `${prefix}${safePath}` : null;
+}

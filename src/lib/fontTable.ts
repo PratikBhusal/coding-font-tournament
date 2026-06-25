@@ -43,5 +43,6 @@ export function getSelectableFontTableRowAttrs(font: CodingFont) {
     "data-site-url": font.siteUrl,
     "data-download-url": font.downloadUrl,
     "data-system": font.isSystemFont ? "1" : "0",
+    "data-requires-apple-device": font.requiresAppleDevice ? "1" : "0",
   };
 }

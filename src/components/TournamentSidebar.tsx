@@ -1,6 +1,13 @@
-import { type Accessor, createSignal, For, Show } from "solid-js";
+import {
+  type Accessor,
+  createMemo,
+  createSignal,
+  For,
+  onMount,
+  Show,
+} from "solid-js";
 import { useStore } from "../lib/useStore";
-import type { CodingFont } from "../lib/codingFonts";
+import { appleOnlyFontsAvailable, type CodingFont } from "../lib/codingFonts";
 import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
 import { TournamentEliminationMode } from "../lib/game";
 import {
@@ -221,16 +228,29 @@ function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
 export default function TournamentSidebar(props: TournamentSidebarProps) {
   // Lifted because the search box and the font list both read it.
   const [query, setQuery] = createSignal("");
+  const [mounted, setMounted] = createSignal(false);
+  const [appleFontsAvailable, setAppleFontsAvailable] = createSignal(false);
+  const fonts = createMemo(() => {
+    if (!mounted()) return props.fonts;
+    return props.fonts.filter(
+      (font) => !font.requiresAppleDevice || appleFontsAvailable(),
+    );
+  });
+
+  onMount(() => {
+    setAppleFontsAvailable(appleOnlyFontsAvailable());
+    setMounted(true);
+  });
 
   return (
     <div class="flex flex-col gap-2">
-      <PoolHeader fonts={props.fonts} />
+      <PoolHeader fonts={fonts()} />
       <FontSearch query={query} setQuery={setQuery} />
-      <PoolPresets fonts={props.fonts} />
-      <ImportList fonts={props.fonts} />
+      <PoolPresets fonts={fonts()} />
+      <ImportList fonts={fonts()} />
       <EliminationSelect />
       <StartButton />
-      <FontList fonts={props.fonts} query={query} />
+      <FontList fonts={fonts()} query={query} />
     </div>
   );
 }

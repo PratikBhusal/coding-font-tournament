@@ -51,6 +51,7 @@ const selectAttrs = (font: CodingFont) =>
         fonts.map((font) => (
           <tr
             data-search={getFontTableSearchValue(font)}
+            data-requires-apple-device={font.requiresAppleDevice ? "1" : "0"}
             {...selectAttrs(font)}
             class={`hover:bg-primary-50 dark:hover:bg-primary-900 border-surface-200 dark:border-surface-800 border-b ${
               selectable ? "cursor-pointer" : ""

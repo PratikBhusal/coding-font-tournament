@@ -7,8 +7,66 @@ export interface CodingFont {
   downloadUrl: string;
   includeInInitialTournament?: boolean;
   isSystemFont?: boolean;
+  requiresAppleDevice?: boolean;
   openTypeFeatures?: string[];
   ligatureFeatures?: string[];
+}
+
+export function isAppleDevice() {
+  if (typeof navigator === "undefined") return false;
+
+  return /Mac|iPhone|iPad|iPod|Macintosh/i.test(getDevicePlatformText());
+}
+
+export function getDevicePlatformText() {
+  if (typeof navigator === "undefined") return "";
+
+  return [
+    // Chromium-specific Client Hints API; Firefox does not expose it.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData
+    navigator.userAgentData?.platform,
+    navigator.platform,
+    navigator.userAgent,
+  ]
+    .filter(Boolean)
+    .join(" | ");
+}
+
+export const APPLE_FONT_OVERRIDE_KEY = "appleFontOverride";
+
+export function readAppleFontOverride() {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const value = window.localStorage.getItem(APPLE_FONT_OVERRIDE_KEY);
+    if (value === "enabled") return true;
+    if (value === "disabled") return false;
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+export function setAppleFontOverride(enabled: boolean | null) {
+  if (typeof window === "undefined") return;
+
+  try {
+    if (enabled === null) {
+      window.localStorage.removeItem(APPLE_FONT_OVERRIDE_KEY);
+    } else {
+      window.localStorage.setItem(
+        APPLE_FONT_OVERRIDE_KEY,
+        enabled ? "enabled" : "disabled",
+      );
+    }
+  } catch {
+    return;
+  }
+}
+
+export function appleOnlyFontsAvailable() {
+  return readAppleFontOverride() ?? isAppleDevice();
 }
 
 const systemFonts: CodingFont[] = [
@@ -156,6 +214,7 @@ const hostedFonts: CodingFont[] = [
   {
     family: "SF Mono",
     includeInInitialTournament: true,
+    requiresAppleDevice: true,
     variants: ["regular", "italic"],
     files: {
       regular: "https://developer.apple.com/fonts/",
@@ -965,4 +1024,13 @@ const sortedHostedFonts = hostedFonts.sort((a, b) =>
   a.family.localeCompare(b.family),
 );
 
-export default [...systemFonts, ...sortedHostedFonts];
+const codingFonts = [...systemFonts, ...sortedHostedFonts];
+
+export function getAvailableCodingFonts(fonts: CodingFont[] = codingFonts) {
+  const appleFontsAvailable = appleOnlyFontsAvailable();
+  return fonts.filter(
+    (font) => !font.requiresAppleDevice || appleFontsAvailable,
+  );
+}
+
+export default codingFonts;

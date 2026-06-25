@@ -73,4 +73,12 @@ describe("font table helpers", () => {
       "data-system": "1",
     });
   });
+
+  test("marks Apple-only fonts for client filtering", () => {
+    const sfMono = fontByFamily("SF Mono");
+
+    expect(getSelectableFontTableRowAttrs(sfMono)).toMatchObject({
+      "data-requires-apple-device": "1",
+    });
+  });
 });

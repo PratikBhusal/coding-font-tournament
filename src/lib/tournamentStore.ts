@@ -1,6 +1,6 @@
 import { computed } from "nanostores";
 import { persistentAtom } from "@nanostores/persistent";
-import codingFonts from "./codingFonts";
+import codingFonts, { getAvailableCodingFonts } from "./codingFonts";
 import { TournamentEliminationMode } from "./game";
 
 // Cross-island state shared by the sidebar form and the board. Both islands import
@@ -13,7 +13,7 @@ const json = { encode: JSON.stringify, decode: JSON.parse };
 // client:load) and a first-visit client agree on the rendered selection — avoiding a
 // hydration mismatch. A stored value (including an empty array, a deliberate "clear")
 // takes precedence on the client.
-const initialFamilies = codingFonts
+const initialFamilies = getAvailableCodingFonts()
   .filter((font) => font.includeInInitialTournament)
   .map((font) => font.family);
 
@@ -42,7 +42,7 @@ export const $savedTournamentResult = persistentAtom<any>(
 
 export const $selectedFonts = computed($tournamentFamilies, (families) => {
   const selected = new Set(families);
-  return codingFonts.filter((font) => selected.has(font.family));
+  return getAvailableCodingFonts().filter((font) => selected.has(font.family));
 });
 export const $canStartTournament = computed(
   $selectedFonts,
